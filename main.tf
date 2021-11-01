@@ -8,7 +8,7 @@ terraform {
 }
 
 provider "google" {
-  project = "tutorials"
+  project = "steel-wharf-330805"
   region  = "us-central1"
   zone    = "us-central1-c"
 }
@@ -24,8 +24,6 @@ resource "google_compute_instance" "vm_instance" {
       image = "ubuntu-os-pro-cloud/ubuntu-pro-2004-lts"
     }
   }
-
-  metadata_startup_script = "${file("./install.docker.sh")}"
   
   network_interface {
     # A default network is created for all GCP projects
@@ -33,6 +31,14 @@ resource "google_compute_instance" "vm_instance" {
     access_config {
     }
   }
+
+  metadata_startup_script = "${file("./install.docker.sh")}"
+
+}
+
+resource "google_compute_network" "vpc_tr_network" {
+  name                    = "terraform-network"
+  auto_create_subnetworks = "true"
 }
 
 resource "google_compute_firewall" "ssh-rule" {
@@ -44,8 +50,4 @@ resource "google_compute_firewall" "ssh-rule" {
   }
   #target_tags = ["terraform-instance"]
   source_ranges = ["0.0.0.0/0"]
-}
-resource "google_compute_network" "vpc_tr_network" {
-  name                    = "terraform-network"
-  auto_create_subnetworks = "true"
 }
